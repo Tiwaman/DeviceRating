@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en" style="scroll-behavior:smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KeepOrReturn — Would you keep it?</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0A0A0A;--white:#FAFAFA;--grey:#888;--dim:#1A1A1A;--border:#222;--keep:#00E5A0;--return:#FF4D2E;--serif:'DM Serif Display',serif;--sans:'DM Sans',sans-serif}
+body{background:var(--bg);color:var(--white);font-family:var(--sans);min-height:100vh;-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input{font-family:inherit}
+
+/* NAV */
+.nav{display:flex;align-items:center;justify-content:space-between;padding:24px 40px;border-bottom:1px solid var(--border)}
+.nav-logo{font-family:var(--serif);font-size:22px;letter-spacing:-0.5px}
+.nav-tagline{font-size:13px;color:var(--grey);letter-spacing:0.5px}
+
+/* DEVICE TABS */
+.tabs-wrap{padding:28px 40px 0;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.tabs-wrap::-webkit-scrollbar{display:none}
+.tabs{display:flex;gap:10px;min-width:max-content}
+.tab{padding:10px 22px;border-radius:100px;font-size:14px;font-weight:500;background:var(--dim);border:1px solid var(--border);transition:all .15s ease;white-space:nowrap}
+.tab:hover{border-color:#444}
+.tab.active{background:var(--white);color:var(--bg);border-color:var(--white)}
+
+/* HERO */
+.hero{text-align:center;padding:60px 40px 40px;position:relative}
+.hero-device{font-family:var(--serif);font-size:clamp(22px,3vw,32px);margin-bottom:8px;opacity:.7}
+.ring-wrap{position:relative;width:280px;height:280px;margin:0 auto 24px}
+.ring-svg{width:100%;height:100%;transform:rotate(-90deg)}
+.ring-bg{fill:none;stroke:var(--dim);stroke-width:8}
+.ring-fill{fill:none;stroke:var(--keep);stroke-width:8;stroke-linecap:round;transition:stroke-dashoffset 1.2s cubic-bezier(.22,1,.36,1),stroke .3s}
+.hero-pct{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:var(--serif);font-size:clamp(64px,12vw,120px);line-height:1;letter-spacing:-4px}
+.hero-pct .pct-sign{font-size:.45em;opacity:.5;letter-spacing:0}
+.hero-label{font-size:15px;color:var(--grey);letter-spacing:1px;text-transform:uppercase}
+
+/* SPLIT BAR */
+.split-wrap{max-width:560px;margin:0 auto;padding:0 40px}
+.split-bar{display:flex;height:6px;border-radius:3px;overflow:hidden}
+.split-keep{background:var(--keep);transition:width 1.2s cubic-bezier(.22,1,.36,1)}
+.split-return{background:var(--return);transition:width 1.2s cubic-bezier(.22,1,.36,1)}
+.split-labels{display:flex;justify-content:space-between;margin-top:8px;font-size:13px;font-weight:500}
+.split-labels .keep-label{color:var(--keep)}
+.split-labels .return-label{color:var(--return)}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:640px;margin:48px auto 0;padding:0 40px}
+.stat-card{background:var(--dim);border:1px solid var(--border);border-radius:14px;padding:22px;text-align:center}
+.stat-value{font-family:var(--serif);font-size:28px;margin-bottom:4px}
+.stat-label{font-size:12px;color:var(--grey);text-transform:uppercase;letter-spacing:1px}
+
+/* SHARE */
+.share-section{text-align:center;margin-top:40px;padding:0 40px}
+.share-btn{display:inline-flex;align-items:center;gap:8px;padding:12px 28px;border-radius:100px;background:var(--dim);border:1px solid var(--border);font-size:14px;font-weight:500;transition:all .15s ease}
+.share-btn:hover{border-color:#555}
+.share-btn svg{width:16px;height:16px}
+.share-overlay{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.85);z-index:100;align-items:center;justify-content:center;flex-direction:column;gap:20px}
+.share-overlay.visible{display:flex}
+.share-overlay canvas{border-radius:12px;max-width:90vw}
+.share-dl{padding:14px 32px;border-radius:100px;background:var(--keep);color:var(--bg);font-weight:700;font-size:15px;transition:opacity .15s}
+.share-dl:hover{opacity:.85}
+.share-close{position:absolute;top:24px;right:28px;font-size:28px;color:var(--grey);transition:color .15s}
+.share-close:hover{color:var(--white)}
+
+/* HOT TAKES */
+.takes-section{max-width:640px;margin:52px auto 0;padding:0 40px}
+.takes-header{font-family:var(--serif);font-size:22px;margin-bottom:20px}
+.takes-feed{display:flex;flex-direction:column;gap:0}
+.take{display:flex;gap:14px;padding:16px 0;border-bottom:1px solid var(--border);animation:slideIn .35s ease}
+.take:first-child{border-top:1px solid var(--border)}
+@keyframes slideIn{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.take-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:5px}
+.take-dot.keep{background:var(--keep)}
+.take-dot.return{background:var(--return)}
+.take-text{font-size:15px;line-height:1.5;flex:1}
+.take-meta{font-size:12px;color:var(--grey);margin-top:4px}
+.take-time{font-size:12px;color:var(--grey);white-space:nowrap;margin-top:3px}
+
+/* VOTE */
+.vote-section{max-width:640px;margin:52px auto 0;padding:0 40px}
+.vote-header{font-family:var(--serif);font-size:22px;margin-bottom:20px}
+.vote-buttons{display:flex;gap:14px;margin-bottom:18px}
+.vote-btn{flex:1;padding:18px;border-radius:14px;font-size:16px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;transition:all .15s ease;border:2px solid transparent}
+.vote-btn.keep-btn{background:rgba(0,229,160,.12);color:var(--keep);border-color:rgba(0,229,160,.25)}
+.vote-btn.keep-btn:hover{background:rgba(0,229,160,.22)}
+.vote-btn.return-btn{background:rgba(255,77,46,.12);color:var(--return);border-color:rgba(255,77,46,.25)}
+.vote-btn.return-btn:hover{background:rgba(255,77,46,.22)}
+.vote-btn:disabled{opacity:.4;cursor:not-allowed}
+.vote-btn:disabled:hover{background:rgba(255,255,255,.05)}
+.voted-label{text-align:center;font-size:13px;color:var(--grey);margin-top:-8px;margin-bottom:16px;letter-spacing:1px;text-transform:uppercase;display:none}
+.voted-label.visible{display:block}
+.take-input-wrap{position:relative}
+.take-input{width:100%;padding:16px 70px 16px 18px;border-radius:14px;background:var(--dim);border:1px solid var(--border);color:var(--white);font-size:15px;outline:none;transition:border-color .15s}
+.take-input:focus{border-color:#444}
+.take-input::placeholder{color:#555}
+.take-input:disabled{opacity:.4;cursor:not-allowed}
+.char-count{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--grey);transition:color .15s}
+.char-count.warn{color:var(--return)}
+
+/* FOOTER */
+.footer{text-align:center;padding:80px 40px 40px;font-size:13px;color:#444;letter-spacing:.5px}
+
+/* MOBILE */
+@media(max-width:768px){
+  .nav{padding:18px 20px}
+  .nav-logo{font-size:18px}
+  .nav-tagline{font-size:11px}
+  .tabs-wrap{padding:20px 20px 0}
+  .hero{padding:40px 20px 32px}
+  .ring-wrap{width:220px;height:220px}
+  .split-wrap{padding:0 20px}
+  .stats{padding:0 20px;gap:10px}
+  .stat-card{padding:16px 10px}
+  .stat-value{font-size:22px}
+  .stat-label{font-size:10px}
+  .share-section{padding:0 20px}
+  .takes-section{padding:0 20px}
+  .takes-feed .take:nth-child(n+5){display:none}
+  .vote-section{padding:0 20px}
+  .vote-buttons{flex-direction:column;gap:10px}
+  .footer{padding:60px 20px 32px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo">KEEPORRETURN</div>
+  <div class="nav-tagline">the only review that matters</div>
+</nav>
+
+<div class="tabs-wrap">
+  <div class="tabs" id="tabs"></div>
+</div>
+
+<section class="hero">
+  <div class="hero-device" id="heroDevice"></div>
+  <div class="ring-wrap">
+    <svg class="ring-svg" viewBox="0 0 280 280">
+      <circle class="ring-bg" cx="140" cy="140" r="124"/>
+      <circle class="ring-fill" id="ringFill" cx="140" cy="140" r="124"/>
+    </svg>
+    <div class="hero-pct"><span id="pctNum">0</span><span class="pct-sign">%</span></div>
+  </div>
+  <div class="hero-label">would keep it</div>
+</section>
+
+<div class="split-wrap">
+  <div class="split-bar">
+    <div class="split-keep" id="splitKeep"></div>
+    <div class="split-return" id="splitReturn"></div>
+  </div>
+  <div class="split-labels">
+    <span class="keep-label" id="keepLabel"></span>
+    <span class="return-label" id="returnLabel"></span>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stat-card"><div class="stat-value" id="statVotes">—</div><div class="stat-label">Total Verdicts</div></div>
+  <div class="stat-card"><div class="stat-value" id="statDays">—</div><div class="stat-label">Days Tracked</div></div>
+  <div class="stat-card"><div class="stat-value" id="statTrend">—</div><div class="stat-label">Trending</div></div>
+</div>
+
+<div class="share-section">
+  <button class="share-btn" onclick="openShare()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+    Share Verdict
+  </button>
+</div>
+
+<div class="share-overlay" id="shareOverlay">
+  <button class="share-close" onclick="closeShare()">&times;</button>
+  <canvas id="shareCanvas" width="600" height="400"></canvas>
+  <button class="share-dl" onclick="downloadShare()">Download PNG</button>
+</div>
+
+<section class="takes-section">
+  <div class="takes-header">Hot Takes</div>
+  <div class="takes-feed" id="takesFeed"></div>
+</section>
+
+<section class="vote-section">
+  <div class="vote-header">Cast Your Verdict</div>
+  <div class="vote-buttons">
+    <button class="vote-btn keep-btn" id="keepBtn" onclick="vote('keep')">Keeping It</button>
+    <button class="vote-btn return-btn" id="returnBtn" onclick="vote('return')">Returning It</button>
+  </div>
+  <div class="voted-label" id="votedLabel">verdict cast</div>
+  <div class="take-input-wrap">
+    <input class="take-input" id="takeInput" type="text" maxlength="80" placeholder="Drop a hot take (optional, 80 chars max)" disabled>
+    <span class="char-count" id="charCount">80</span>
+  </div>
+</section>
+
+<footer class="footer">built different. no stars. just truth.</footer>
+
+<script>
+const devices={
+  "iPhone 16 Pro":{keep:74,votes:18420,days:142,trend:"up",takes:[
+    {type:"keep",text:"Camera control finally makes sense after 2 weeks",time:"2h ago"},
+    {type:"keep",text:"Battery anxiety is genuinely gone",time:"5h ago"},
+    {type:"return",text:"Too heavy. My wrist lodged a formal complaint.",time:"8h ago"},
+    {type:"return",text:"Paid £1200 for a slightly better camera. I'm the problem.",time:"12h ago"},
+    {type:"keep",text:"Action mode video makes everything look cinematic",time:"1d ago"}
+  ]},
+  "Samsung S25 Ultra":{keep:68,votes:14310,days:98,trend:"down",takes:[
+    {type:"keep",text:"S Pen replaced my entire notebook. Not joking.",time:"1h ago"},
+    {type:"return",text:"S Pen is a gimmick I used once and forgot existed",time:"4h ago"},
+    {type:"keep",text:"7 years of updates is the only reason I stayed",time:"9h ago"},
+    {type:"return",text:"Software bloat in 2025 is genuinely embarrassing",time:"14h ago"},
+    {type:"keep",text:"Display makes every other screen look broken",time:"1d ago"}
+  ]},
+  "MacBook Air M3":{keep:91,votes:22100,days:210,trend:"up",takes:[
+    {type:"keep",text:"15 hour battery. Everything else is noise.",time:"30m ago"},
+    {type:"keep",text:"Fanless and never once throttled. Black magic.",time:"3h ago"},
+    {type:"return",text:"No HDMI in 2024 should be a criminal offence",time:"7h ago"},
+    {type:"keep",text:"Best laptop for the money. It isn't close.",time:"11h ago"},
+    {type:"return",text:"Dongle life wasn't in the brochure",time:"1d ago"}
+  ]},
+  "Pixel 9 Pro":{keep:81,votes:9870,days:118,trend:"up",takes:[
+    {type:"keep",text:"Best photos I've ever taken with a phone",time:"45m ago"},
+    {type:"keep",text:"Clean Android + Gemini is actually a real combo",time:"6h ago"},
+    {type:"return",text:"Feels plasticky for a £1000 phone",time:"10h ago"},
+    {type:"keep",text:"Night Sight at dinner = zero bad photos ever",time:"15h ago"},
+    {type:"return",text:"Network coverage still behind Apple and Samsung",time:"2d ago"}
+  ]},
+  "Nothing Phone 3":{keep:61,votes:6240,days:64,trend:"flat",takes:[
+    {type:"keep",text:"Glyph interface sounds gimmicky until you use it daily",time:"2h ago"},
+    {type:"return",text:"Paid for the aesthetic. Performance didn't get the memo.",time:"5h ago"},
+    {type:"keep",text:"Most conversations I've had about a phone ever",time:"9h ago"},
+    {type:"return",text:"Hype was louder than the actual product",time:"13h ago"},
+    {type:"keep",text:"Looks like nothing else. That alone justifies it.",time:"1d ago"}
+  ]},
+  "OnePlus 13":{keep:77,votes:11580,days:88,trend:"up",takes:[
+    {type:"keep",text:"Hasselblad tuning actually shows in real photos",time:"1h ago"},
+    {type:"keep",text:"Charges from 0 to 100 while I shower. Insane.",time:"4h ago"},
+    {type:"return",text:"OxygenOS feels unfinished in small but annoying ways",time:"8h ago"},
+    {type:"keep",text:"Flagship specs at £200 less than the competition",time:"12h ago"},
+    {type:"return",text:"Resale value is basically zero and I knew it going in",time:"1d ago"}
+  ]}
+};
+
+const deviceNames=Object.keys(devices);
+let current=deviceNames[0];
+const voted={};
+const CIRC=2*Math.PI*124;
+const ring=document.getElementById("ringFill");
+ring.style.strokeDasharray=CIRC;
+ring.style.strokeDashoffset=CIRC;
+
+function fmt(n){return n.toLocaleString("en-US")}
+
+function buildTabs(){
+  const c=document.getElementById("tabs");
+  c.innerHTML="";
+  deviceNames.forEach(name=>{
+    const b=document.createElement("button");
+    b.className="tab"+(name===current?" active":"");
+    b.textContent=name;
+    b.onclick=()=>selectDevice(name);
+    c.appendChild(b);
+  });
+}
+
+function animateNumber(el,target,dur){
+  const start=performance.now();
+  const from=0;
+  function tick(now){
+    const t=Math.min((now-start)/dur,1);
+    const ease=1-Math.pow(1-t,3);
+    el.textContent=Math.round(from+(target-from)*ease);
+    if(t<1)requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+function selectDevice(name){
+  current=name;
+  const d=devices[name];
+  buildTabs();
+  document.getElementById("heroDevice").textContent=name;
+  animateNumber(document.getElementById("pctNum"),d.keep,1200);
+  const offset=CIRC-(d.keep/100)*CIRC;
+  ring.style.strokeDashoffset=CIRC;
+  ring.style.stroke=d.keep>=50?"var(--keep)":"var(--return)";
+  requestAnimationFrame(()=>{requestAnimationFrame(()=>{ring.style.strokeDashoffset=offset})});
+  document.getElementById("splitKeep").style.width=d.keep+"%";
+  document.getElementById("splitReturn").style.width=(100-d.keep)+"%";
+  document.getElementById("keepLabel").textContent=d.keep+"% keep";
+  document.getElementById("returnLabel").textContent=(100-d.keep)+"% return";
+  document.getElementById("statVotes").textContent=fmt(d.votes);
+  document.getElementById("statDays").textContent=d.days;
+  const arrows={up:"↑",down:"↓",flat:"→"};
+  document.getElementById("statTrend").textContent=arrows[d.trend]||"→";
+  renderTakes();
+  updateVoteUI();
+}
+
+function renderTakes(){
+  const feed=document.getElementById("takesFeed");
+  feed.innerHTML="";
+  const d=devices[current];
+  d.takes.slice(0,6).forEach(t=>{
+    const div=document.createElement("div");
+    div.className="take";
+    div.innerHTML=`<div class="take-dot ${t.type}"></div><div style="flex:1"><div class="take-text">${esc(t.text)}</div></div><div class="take-time">${esc(t.time)}</div>`;
+    feed.appendChild(div);
+  });
+}
+
+function esc(s){const d=document.createElement("div");d.textContent=s;return d.innerHTML}
+
+function updateVoteUI(){
+  const v=voted[current];
+  document.getElementById("keepBtn").disabled=!!v;
+  document.getElementById("returnBtn").disabled=!!v;
+  document.getElementById("votedLabel").classList.toggle("visible",!!v);
+  document.getElementById("takeInput").disabled=!!v;
+}
+
+function vote(type){
+  if(voted[current])return;
+  const d=devices[current];
+  d.votes++;
+  const keepVotes=Math.round(d.keep/100*d.votes);
+  const newKeep=type==="keep"?keepVotes+1:keepVotes;
+  d.keep=Math.round(newKeep/d.votes*100);
+  voted[current]=type;
+  const inp=document.getElementById("takeInput");
+  const text=inp.value.trim();
+  if(text){
+    d.takes.unshift({type,text,time:"just now"});
+    if(d.takes.length>6)d.takes.pop();
+  }
+  inp.value="";
+  document.getElementById("charCount").textContent="80";
+  document.getElementById("charCount").classList.remove("warn");
+  selectDevice(current);
+}
+
+document.getElementById("takeInput").addEventListener("input",function(){
+  const rem=80-this.value.length;
+  const cc=document.getElementById("charCount");
+  cc.textContent=rem;
+  cc.classList.toggle("warn",rem<10);
+});
+
+function openShare(){
+  const d=devices[current];
+  const canvas=document.getElementById("shareCanvas");
+  const ctx=canvas.getContext("2d");
+  canvas.width=600;canvas.height=400;
+  ctx.fillStyle="#0A0A0A";
+  ctx.fillRect(0,0,600,400);
+  ctx.fillStyle="#FAFAFA";
+  ctx.font="28px 'DM Serif Display',serif";
+  ctx.textAlign="center";
+  ctx.fillText(current,300,100);
+  ctx.fillStyle="#00E5A0";
+  ctx.font="bold 120px 'DM Serif Display',serif";
+  ctx.fillText(d.keep+"%",300,240);
+  ctx.fillStyle="#888";
+  ctx.font="16px 'DM Sans',sans-serif";
+  ctx.fillText("would keep it · keeporreturn.com",300,310);
+  ctx.fillText(fmt(d.votes)+" verdicts",300,340);
+  document.getElementById("shareOverlay").classList.add("visible");
+}
+
+function closeShare(){document.getElementById("shareOverlay").classList.remove("visible")}
+
+function downloadShare(){
+  const canvas=document.getElementById("shareCanvas");
+  const a=document.createElement("a");
+  a.download=current.toLowerCase().replace(/\s+/g,"-")+"-verdict.png";
+  a.href=canvas.toDataURL("image/png");
+  a.click();
+}
+
+document.getElementById("shareOverlay").addEventListener("click",function(e){
+  if(e.target===this)closeShare();
+});
+
+buildTabs();
+selectDevice(current);
+</script>
+</body>
+</html>
