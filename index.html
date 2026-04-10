@@ -202,60 +202,39 @@ input{font-family:inherit}
 <footer class="footer">built different. no stars. just truth.</footer>
 
 <script>
-const devices={
-  "iPhone 16 Pro":{keep:74,votes:18420,days:142,trend:"up",takes:[
-    {type:"keep",text:"Camera control finally makes sense after 2 weeks",time:"2h ago"},
-    {type:"keep",text:"Battery anxiety is genuinely gone",time:"5h ago"},
-    {type:"return",text:"Too heavy. My wrist lodged a formal complaint.",time:"8h ago"},
-    {type:"return",text:"Paid £1200 for a slightly better camera. I'm the problem.",time:"12h ago"},
-    {type:"keep",text:"Action mode video makes everything look cinematic",time:"1d ago"}
-  ]},
-  "Samsung S25 Ultra":{keep:68,votes:14310,days:98,trend:"down",takes:[
-    {type:"keep",text:"S Pen replaced my entire notebook. Not joking.",time:"1h ago"},
-    {type:"return",text:"S Pen is a gimmick I used once and forgot existed",time:"4h ago"},
-    {type:"keep",text:"7 years of updates is the only reason I stayed",time:"9h ago"},
-    {type:"return",text:"Software bloat in 2025 is genuinely embarrassing",time:"14h ago"},
-    {type:"keep",text:"Display makes every other screen look broken",time:"1d ago"}
-  ]},
-  "MacBook Air M3":{keep:91,votes:22100,days:210,trend:"up",takes:[
-    {type:"keep",text:"15 hour battery. Everything else is noise.",time:"30m ago"},
-    {type:"keep",text:"Fanless and never once throttled. Black magic.",time:"3h ago"},
-    {type:"return",text:"No HDMI in 2024 should be a criminal offence",time:"7h ago"},
-    {type:"keep",text:"Best laptop for the money. It isn't close.",time:"11h ago"},
-    {type:"return",text:"Dongle life wasn't in the brochure",time:"1d ago"}
-  ]},
-  "Pixel 9 Pro":{keep:81,votes:9870,days:118,trend:"up",takes:[
-    {type:"keep",text:"Best photos I've ever taken with a phone",time:"45m ago"},
-    {type:"keep",text:"Clean Android + Gemini is actually a real combo",time:"6h ago"},
-    {type:"return",text:"Feels plasticky for a £1000 phone",time:"10h ago"},
-    {type:"keep",text:"Night Sight at dinner = zero bad photos ever",time:"15h ago"},
-    {type:"return",text:"Network coverage still behind Apple and Samsung",time:"2d ago"}
-  ]},
-  "Nothing Phone 3":{keep:61,votes:6240,days:64,trend:"flat",takes:[
-    {type:"keep",text:"Glyph interface sounds gimmicky until you use it daily",time:"2h ago"},
-    {type:"return",text:"Paid for the aesthetic. Performance didn't get the memo.",time:"5h ago"},
-    {type:"keep",text:"Most conversations I've had about a phone ever",time:"9h ago"},
-    {type:"return",text:"Hype was louder than the actual product",time:"13h ago"},
-    {type:"keep",text:"Looks like nothing else. That alone justifies it.",time:"1d ago"}
-  ]},
-  "OnePlus 13":{keep:77,votes:11580,days:88,trend:"up",takes:[
-    {type:"keep",text:"Hasselblad tuning actually shows in real photos",time:"1h ago"},
-    {type:"keep",text:"Charges from 0 to 100 while I shower. Insane.",time:"4h ago"},
-    {type:"return",text:"OxygenOS feels unfinished in small but annoying ways",time:"8h ago"},
-    {type:"keep",text:"Flagship specs at £200 less than the competition",time:"12h ago"},
-    {type:"return",text:"Resale value is basically zero and I knew it going in",time:"1d ago"}
-  ]}
-};
-
-const deviceNames=Object.keys(devices);
-let current=deviceNames[0];
+let devices={};
+let deviceNames=[];
+let current=null;
 const voted={};
+let loading=true;
+
 const CIRC=2*Math.PI*124;
 const ring=document.getElementById("ringFill");
 ring.style.strokeDasharray=CIRC;
 ring.style.strokeDashoffset=CIRC;
 
+// Load voted state from localStorage
+try{const s=JSON.parse(localStorage.getItem('kor_voted')||'{}');Object.assign(voted,s)}catch(e){}
+
 function fmt(n){return n.toLocaleString("en-US")}
+
+// Fetch devices from API
+async function loadDevices(){
+  document.getElementById("heroDevice").textContent="Loading...";
+  try{
+    const res=await fetch('/api/devices');
+    if(!res.ok)throw new Error('API error');
+    devices=await res.json();
+    deviceNames=Object.keys(devices);
+    current=deviceNames[0];
+    loading=false;
+    buildTabs();
+    selectDevice(current);
+  }catch(e){
+    console.error('Failed to load devices:',e);
+    document.getElementById("heroDevice").textContent="Failed to load. Refresh to retry.";
+  }
+}
 
 function buildTabs(){
   const c=document.getElementById("tabs");
@@ -284,6 +263,7 @@ function animateNumber(el,target,dur){
 function selectDevice(name){
   current=name;
   const d=devices[name];
+  if(!d)return;
   buildTabs();
   document.getElementById("heroDevice").textContent=name;
   animateNumber(document.getElementById("pctNum"),d.keep,1200);
@@ -297,8 +277,8 @@ function selectDevice(name){
   document.getElementById("returnLabel").textContent=(100-d.keep)+"% return";
   document.getElementById("statVotes").textContent=fmt(d.votes);
   document.getElementById("statDays").textContent=d.days;
-  const arrows={up:"↑",down:"↓",flat:"→"};
-  document.getElementById("statTrend").textContent=arrows[d.trend]||"→";
+  const arrows={up:"\u2191",down:"\u2193",flat:"\u2192"};
+  document.getElementById("statTrend").textContent=arrows[d.trend]||"\u2192";
   renderTakes();
   updateVoteUI();
 }
@@ -307,6 +287,7 @@ function renderTakes(){
   const feed=document.getElementById("takesFeed");
   feed.innerHTML="";
   const d=devices[current];
+  if(!d||!d.takes)return;
   d.takes.slice(0,6).forEach(t=>{
     const div=document.createElement("div");
     div.className="take";
@@ -325,24 +306,55 @@ function updateVoteUI(){
   document.getElementById("takeInput").disabled=!!v;
 }
 
-function vote(type){
-  if(voted[current])return;
+async function vote(type){
+  if(voted[current]||loading)return;
   const d=devices[current];
-  d.votes++;
-  const keepVotes=Math.round(d.keep/100*d.votes);
-  const newKeep=type==="keep"?keepVotes+1:keepVotes;
-  d.keep=Math.round(newKeep/d.votes*100);
-  voted[current]=type;
+  const slug=d.slug||current.toLowerCase().replace(/\s+/g,'-');
   const inp=document.getElementById("takeInput");
   const text=inp.value.trim();
-  if(text){
-    d.takes.unshift({type,text,time:"just now"});
-    if(d.takes.length>6)d.takes.pop();
+
+  // Disable buttons immediately
+  document.getElementById("keepBtn").disabled=true;
+  document.getElementById("returnBtn").disabled=true;
+
+  try{
+    const res=await fetch('/api/vote',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({device:slug,type,take:text||undefined})
+    });
+
+    if(res.status===409){
+      // Already voted from this IP
+      voted[current]=type;
+      localStorage.setItem('kor_voted',JSON.stringify(voted));
+      updateVoteUI();
+      return;
+    }
+
+    if(!res.ok)throw new Error('Vote failed');
+
+    const data=await res.json();
+    d.keep=data.keep;
+    d.votes=data.votes;
+    voted[current]=type;
+    localStorage.setItem('kor_voted',JSON.stringify(voted));
+
+    if(text){
+      d.takes.unshift({type,text,time:'just now'});
+      if(d.takes.length>6)d.takes.pop();
+    }
+
+    inp.value="";
+    document.getElementById("charCount").textContent="80";
+    document.getElementById("charCount").classList.remove("warn");
+    selectDevice(current);
+  }catch(e){
+    console.error('Vote error:',e);
+    // Re-enable buttons on error
+    document.getElementById("keepBtn").disabled=false;
+    document.getElementById("returnBtn").disabled=false;
   }
-  inp.value="";
-  document.getElementById("charCount").textContent="80";
-  document.getElementById("charCount").classList.remove("warn");
-  selectDevice(current);
 }
 
 document.getElementById("takeInput").addEventListener("input",function(){
@@ -354,6 +366,7 @@ document.getElementById("takeInput").addEventListener("input",function(){
 
 function openShare(){
   const d=devices[current];
+  if(!d)return;
   const canvas=document.getElementById("shareCanvas");
   const ctx=canvas.getContext("2d");
   canvas.width=600;canvas.height=400;
@@ -368,7 +381,7 @@ function openShare(){
   ctx.fillText(d.keep+"%",300,240);
   ctx.fillStyle="#888";
   ctx.font="16px 'DM Sans',sans-serif";
-  ctx.fillText("would keep it · keeporreturn.com",300,310);
+  ctx.fillText("would keep it \u00b7 devicerating.com",300,310);
   ctx.fillText(fmt(d.votes)+" verdicts",300,340);
   document.getElementById("shareOverlay").classList.add("visible");
 }
@@ -387,8 +400,21 @@ document.getElementById("shareOverlay").addEventListener("click",function(e){
   if(e.target===this)closeShare();
 });
 
-buildTabs();
-selectDevice(current);
+// Auto-refresh takes every 30 seconds
+setInterval(async()=>{
+  if(!current||!devices[current])return;
+  const slug=devices[current].slug||current.toLowerCase().replace(/\s+/g,'-');
+  try{
+    const res=await fetch(`/api/takes?device=${slug}&limit=6`);
+    if(res.ok){
+      devices[current].takes=await res.json();
+      renderTakes();
+    }
+  }catch(e){}
+},30000);
+
+// Boot
+loadDevices();
 </script>
 </body>
 </html>
