@@ -254,11 +254,57 @@ input{font-family:inherit}
 <footer class="footer">built different. no stars. just truth.</footer>
 
 <script>
-let devices={};
-let deviceNames=[];
-let current=null;
+// Seed data — renders instantly, then API hydrates with live data
+const SEED={
+  "iPhone 16 Pro":{slug:"iphone-16-pro",keep:74,votes:18420,days:143,trend:"up",takes:[
+    {type:"keep",text:"Camera control finally makes sense after 2 weeks",time:"2h ago"},
+    {type:"keep",text:"Battery anxiety is genuinely gone",time:"5h ago"},
+    {type:"return",text:"Too heavy. My wrist lodged a formal complaint.",time:"8h ago"},
+    {type:"return",text:"Paid \u00a31200 for a slightly better camera. I'm the problem.",time:"12h ago"},
+    {type:"keep",text:"Action mode video makes everything look cinematic",time:"1d ago"}
+  ]},
+  "Samsung S25 Ultra":{slug:"samsung-s25-ultra",keep:68,votes:14310,days:99,trend:"down",takes:[
+    {type:"keep",text:"S Pen replaced my entire notebook. Not joking.",time:"1h ago"},
+    {type:"return",text:"S Pen is a gimmick I used once and forgot existed",time:"4h ago"},
+    {type:"keep",text:"7 years of updates is the only reason I stayed",time:"9h ago"},
+    {type:"return",text:"Software bloat in 2025 is genuinely embarrassing",time:"14h ago"},
+    {type:"keep",text:"Display makes every other screen look broken",time:"1d ago"}
+  ]},
+  "MacBook Air M3":{slug:"macbook-air-m3",keep:91,votes:22100,days:210,trend:"up",takes:[
+    {type:"keep",text:"15 hour battery. Everything else is noise.",time:"30m ago"},
+    {type:"keep",text:"Fanless and never once throttled. Black magic.",time:"3h ago"},
+    {type:"return",text:"No HDMI in 2024 should be a criminal offence",time:"7h ago"},
+    {type:"keep",text:"Best laptop for the money. It isn't close.",time:"11h ago"},
+    {type:"return",text:"Dongle life wasn't in the brochure",time:"1d ago"}
+  ]},
+  "Pixel 9 Pro":{slug:"pixel-9-pro",keep:81,votes:9870,days:119,trend:"up",takes:[
+    {type:"keep",text:"Best photos I've ever taken with a phone",time:"45m ago"},
+    {type:"keep",text:"Clean Android + Gemini is actually a real combo",time:"6h ago"},
+    {type:"return",text:"Feels plasticky for a \u00a31000 phone",time:"10h ago"},
+    {type:"keep",text:"Night Sight at dinner = zero bad photos ever",time:"15h ago"},
+    {type:"return",text:"Network coverage still behind Apple and Samsung",time:"2d ago"}
+  ]},
+  "Nothing Phone 3":{slug:"nothing-phone-3",keep:61,votes:6240,days:65,trend:"flat",takes:[
+    {type:"keep",text:"Glyph interface sounds gimmicky until you use it daily",time:"2h ago"},
+    {type:"return",text:"Paid for the aesthetic. Performance didn't get the memo.",time:"5h ago"},
+    {type:"keep",text:"Most conversations I've had about a phone ever",time:"9h ago"},
+    {type:"return",text:"Hype was louder than the actual product",time:"13h ago"},
+    {type:"keep",text:"Looks like nothing else. That alone justifies it.",time:"1d ago"}
+  ]},
+  "OnePlus 13":{slug:"oneplus-13",keep:77,votes:11580,days:89,trend:"up",takes:[
+    {type:"keep",text:"Hasselblad tuning actually shows in real photos",time:"1h ago"},
+    {type:"keep",text:"Charges from 0 to 100 while I shower. Insane.",time:"4h ago"},
+    {type:"return",text:"OxygenOS feels unfinished in small but annoying ways",time:"8h ago"},
+    {type:"keep",text:"Flagship specs at \u00a3200 less than the competition",time:"12h ago"},
+    {type:"return",text:"Resale value is basically zero and I knew it going in",time:"1d ago"}
+  ]}
+};
+
+let devices=JSON.parse(JSON.stringify(SEED));
+let deviceNames=Object.keys(devices);
+let current=deviceNames[0];
 const voted={};
-let loading=true;
+let loading=false;
 
 const CIRC=2*Math.PI*124;
 const ring=document.getElementById("ringFill");
@@ -270,21 +316,21 @@ try{const s=JSON.parse(localStorage.getItem('kor_voted')||'{}');Object.assign(vo
 
 function fmt(n){return n.toLocaleString("en-US")}
 
-// Fetch devices from API
+// Render immediately with seed data, then hydrate from API
+buildTabs();
+selectDevice(current);
+
 async function loadDevices(){
-  document.getElementById("heroDevice").textContent="Loading...";
   try{
     const res=await fetch('/api/devices');
     if(!res.ok)throw new Error('API error');
-    devices=await res.json();
+    const live=await res.json();
+    devices=live;
     deviceNames=Object.keys(devices);
-    current=deviceNames[0];
-    loading=false;
-    buildTabs();
+    if(!devices[current])current=deviceNames[0];
     selectDevice(current);
   }catch(e){
-    console.error('Failed to load devices:',e);
-    document.getElementById("heroDevice").textContent="Failed to load. Refresh to retry.";
+    console.error('API hydration failed, using seed data:',e);
   }
 }
 
