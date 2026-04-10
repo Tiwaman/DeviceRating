@@ -7,7 +7,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚖️</text></svg>">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{--bg:#0A0A0A;--white:#FAFAFA;--grey:#888;--dim:#1A1A1A;--border:#222;--keep:#00E5A0;--return:#FF4D2E;--serif:'DM Serif Display',serif;--sans:'DM Sans',sans-serif}
@@ -18,7 +18,11 @@ input{font-family:inherit}
 
 /* NAV */
 .nav{display:flex;align-items:center;justify-content:space-between;padding:24px 40px;border-bottom:1px solid var(--border)}
-.nav-logo{font-family:var(--serif);font-size:22px;letter-spacing:-0.5px}
+.nav-logo{display:flex;align-items:center;gap:0;font-family:'Space Grotesk',sans-serif;font-size:22px;font-weight:700;letter-spacing:-0.5px;user-select:none}
+.nav-logo .logo-device{color:var(--white)}
+.nav-logo .logo-rating{color:var(--keep)}
+.nav-logo .logo-dot{width:8px;height:8px;border-radius:50%;background:var(--keep);display:inline-block;margin-left:4px;margin-bottom:2px;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 .nav-tagline{font-size:13px;color:var(--grey);letter-spacing:0.5px}
 
 /* DEVICE TABS */
@@ -134,7 +138,8 @@ input{font-family:inherit}
 /* MOBILE */
 @media(max-width:768px){
   .nav{padding:18px 20px}
-  .nav-logo{font-size:18px}
+  .nav-logo{font-size:17px}
+  .nav-logo .logo-dot{width:6px;height:6px}
   .nav-tagline{font-size:11px}
   .tabs-wrap{padding:20px 20px 0}
   .hero{padding:40px 20px 32px}
@@ -159,7 +164,7 @@ input{font-family:inherit}
 <body>
 
 <nav class="nav">
-  <div class="nav-logo">DEVICERATING</div>
+  <div class="nav-logo"><span class="logo-device">DEVICE</span><span class="logo-rating">RATING</span><span class="logo-dot"></span></div>
   <div class="nav-tagline">the only review that matters</div>
 </nav>
 
