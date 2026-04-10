@@ -37,14 +37,26 @@ module.exports = async function handler(req, res) {
       .from('votes')
       .insert({ device_id: dev.id, vote_type: type, ip_hash: ipHash });
 
+    // If vote already exists but a take is provided, just insert the take
     if (voteErr) {
       if (voteErr.code === '23505') { // unique violation
+        if (take && take.trim().length > 0 && take.trim().length <= 80) {
+          await supabase
+            .from('takes')
+            .insert({
+              device_id: dev.id,
+              vote_type: type,
+              text: take.trim(),
+              ip_hash: ipHash
+            });
+          return res.status(200).json({ take_added: true });
+        }
         return res.status(409).json({ error: 'already_voted' });
       }
       throw voteErr;
     }
 
-    // Optionally insert hot take
+    // Optionally insert hot take alongside vote
     if (take && take.trim().length > 0 && take.trim().length <= 80) {
       await supabase
         .from('takes')

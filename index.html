@@ -84,23 +84,48 @@ input{font-family:inherit}
 
 /* VOTE */
 .vote-section{max-width:640px;margin:52px auto 0;padding:0 40px}
-.vote-header{font-family:var(--serif);font-size:22px;margin-bottom:20px}
-.vote-buttons{display:flex;gap:14px;margin-bottom:18px}
-.vote-btn{flex:1;padding:18px;border-radius:14px;font-size:16px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;transition:all .15s ease;border:2px solid transparent}
-.vote-btn.keep-btn{background:rgba(0,229,160,.12);color:var(--keep);border-color:rgba(0,229,160,.25)}
-.vote-btn.keep-btn:hover{background:rgba(0,229,160,.22)}
-.vote-btn.return-btn{background:rgba(255,77,46,.12);color:var(--return);border-color:rgba(255,77,46,.25)}
-.vote-btn.return-btn:hover{background:rgba(255,77,46,.22)}
-.vote-btn:disabled{opacity:.4;cursor:not-allowed}
-.vote-btn:disabled:hover{background:rgba(255,255,255,.05)}
-.voted-label{text-align:center;font-size:13px;color:var(--grey);margin-top:-8px;margin-bottom:16px;letter-spacing:1px;text-transform:uppercase;display:none}
-.voted-label.visible{display:block}
-.take-input-wrap{position:relative}
-.take-input{width:100%;padding:16px 70px 16px 18px;border-radius:14px;background:var(--dim);border:1px solid var(--border);color:var(--white);font-size:15px;outline:none;transition:border-color .15s}
+.vote-card{background:var(--dim);border:1px solid var(--border);border-radius:20px;padding:36px 32px;text-align:center;position:relative;overflow:hidden}
+.vote-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.06),transparent)}
+.vote-prompt{font-family:var(--serif);font-size:24px;margin-bottom:6px}
+.vote-sub{font-size:14px;color:var(--grey);margin-bottom:28px}
+.vote-buttons{display:flex;gap:14px}
+.vote-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:10px;padding:24px 18px;border-radius:16px;font-size:15px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;transition:all .2s ease;border:2px solid transparent;position:relative}
+.vote-btn .vote-icon{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;transition:transform .2s ease}
+.vote-btn.keep-btn{background:rgba(0,229,160,.08);color:var(--keep);border-color:rgba(0,229,160,.15)}
+.vote-btn.keep-btn .vote-icon{background:rgba(0,229,160,.15)}
+.vote-btn.keep-btn:hover{background:rgba(0,229,160,.18);border-color:rgba(0,229,160,.4);transform:translateY(-2px)}
+.vote-btn.keep-btn:hover .vote-icon{transform:scale(1.1)}
+.vote-btn.keep-btn:active{transform:translateY(0)}
+.vote-btn.return-btn{background:rgba(255,77,46,.08);color:var(--return);border-color:rgba(255,77,46,.15)}
+.vote-btn.return-btn .vote-icon{background:rgba(255,77,46,.15)}
+.vote-btn.return-btn:hover{background:rgba(255,77,46,.18);border-color:rgba(255,77,46,.4);transform:translateY(-2px)}
+.vote-btn.return-btn:hover .vote-icon{transform:scale(1.1)}
+.vote-btn.return-btn:active{transform:translateY(0)}
+.vote-btn:disabled{opacity:.35;cursor:not-allowed;transform:none!important}
+.vote-btn:disabled .vote-icon{transform:none!important}
+
+/* Voted state */
+.voted-state{display:none;text-align:center;padding:8px 0 0}
+.voted-state.visible{display:block;animation:fadeUp .4s ease}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.voted-check{width:48px;height:48px;border-radius:50%;margin:0 auto 12px;display:flex;align-items:center;justify-content:center;font-size:24px}
+.voted-check.keep{background:rgba(0,229,160,.15);color:var(--keep)}
+.voted-check.return{background:rgba(255,77,46,.15);color:var(--return)}
+.voted-text{font-size:14px;color:var(--grey);margin-bottom:4px}
+.voted-verdict{font-family:var(--serif);font-size:18px}
+
+/* Take input - hidden until voted */
+.take-phase{max-height:0;overflow:hidden;opacity:0;transition:max-height .4s ease,opacity .3s ease .1s,margin .3s ease}
+.take-phase.visible{max-height:200px;opacity:1;margin-top:24px}
+.take-phase-label{font-size:13px;color:var(--grey);margin-bottom:10px;text-align:left}
+.take-input-wrap{position:relative;display:flex;gap:10px}
+.take-input{flex:1;padding:14px 18px;border-radius:12px;background:var(--bg);border:1px solid var(--border);color:var(--white);font-size:14px;outline:none;transition:border-color .15s}
 .take-input:focus{border-color:#444}
-.take-input::placeholder{color:#555}
-.take-input:disabled{opacity:.4;cursor:not-allowed}
-.char-count{position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--grey);transition:color .15s}
+.take-input::placeholder{color:#444}
+.take-submit{padding:14px 20px;border-radius:12px;background:var(--white);color:var(--bg);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;transition:all .15s ease;white-space:nowrap}
+.take-submit:hover{opacity:.85}
+.take-submit:disabled{opacity:.3;cursor:not-allowed}
+.char-count{font-size:11px;color:var(--grey);text-align:right;margin-top:6px;transition:color .15s}
 .char-count.warn{color:var(--return)}
 
 /* FOOTER */
@@ -123,7 +148,10 @@ input{font-family:inherit}
   .takes-section{padding:0 20px}
   .takes-feed .take:nth-child(n+5){display:none}
   .vote-section{padding:0 20px}
+  .vote-card{padding:28px 20px}
   .vote-buttons{flex-direction:column;gap:10px}
+  .vote-btn{flex-direction:row;padding:18px 20px}
+  .vote-btn .vote-icon{width:36px;height:36px;font-size:18px}
   .footer{padding:60px 20px 32px}
 }
 </style>
@@ -187,15 +215,34 @@ input{font-family:inherit}
 </section>
 
 <section class="vote-section">
-  <div class="vote-header">Cast Your Verdict</div>
-  <div class="vote-buttons">
-    <button class="vote-btn keep-btn" id="keepBtn" onclick="vote('keep')">Keeping It</button>
-    <button class="vote-btn return-btn" id="returnBtn" onclick="vote('return')">Returning It</button>
-  </div>
-  <div class="voted-label" id="votedLabel">verdict cast</div>
-  <div class="take-input-wrap">
-    <input class="take-input" id="takeInput" type="text" maxlength="80" placeholder="Drop a hot take (optional, 80 chars max)" disabled>
-    <span class="char-count" id="charCount">80</span>
+  <div class="vote-card">
+    <div id="votePhase1">
+      <div class="vote-prompt">Would you keep it?</div>
+      <div class="vote-sub">Join <span id="voteCountLabel">thousands</span> who already decided</div>
+      <div class="vote-buttons">
+        <button class="vote-btn keep-btn" id="keepBtn" onclick="vote('keep')">
+          <span class="vote-icon">&check;</span>
+          Keeping It
+        </button>
+        <button class="vote-btn return-btn" id="returnBtn" onclick="vote('return')">
+          <span class="vote-icon">&times;</span>
+          Returning It
+        </button>
+      </div>
+    </div>
+    <div class="voted-state" id="votedState">
+      <div class="voted-check" id="votedCheck">&check;</div>
+      <div class="voted-text">Your verdict is in</div>
+      <div class="voted-verdict" id="votedVerdict"></div>
+    </div>
+    <div class="take-phase" id="takePhase">
+      <div class="take-phase-label">Got a hot take? Drop it below.</div>
+      <div class="take-input-wrap">
+        <input class="take-input" id="takeInput" type="text" maxlength="80" placeholder="80 characters of pure honesty...">
+        <button class="take-submit" id="takeSubmitBtn" onclick="submitTake()">Post</button>
+      </div>
+      <div class="char-count" id="charCount">80 characters left</div>
+    </div>
   </div>
 </section>
 
@@ -300,18 +347,42 @@ function esc(s){const d=document.createElement("div");d.textContent=s;return d.i
 
 function updateVoteUI(){
   const v=voted[current];
-  document.getElementById("keepBtn").disabled=!!v;
-  document.getElementById("returnBtn").disabled=!!v;
-  document.getElementById("votedLabel").classList.toggle("visible",!!v);
-  document.getElementById("takeInput").disabled=!!v;
+  const phase1=document.getElementById("votePhase1");
+  const votedState=document.getElementById("votedState");
+  const takePhase=document.getElementById("takePhase");
+  const d=devices[current];
+
+  // Update the sub-label with actual count
+  if(d){
+    const label=document.getElementById("voteCountLabel");
+    label.textContent=fmt(d.votes)+" owners";
+  }
+
+  if(v){
+    phase1.style.display="none";
+    votedState.classList.add("visible");
+    const check=document.getElementById("votedCheck");
+    check.className="voted-check "+v;
+    check.innerHTML=v==="keep"?"\u2713":"\u2717";
+    document.getElementById("votedVerdict").textContent=
+      v==="keep"?"You're keeping it":"You're returning it";
+    // Don't show take phase if already voted on revisit
+    takePhase.classList.remove("visible");
+  }else{
+    phase1.style.display="block";
+    votedState.classList.remove("visible");
+    takePhase.classList.remove("visible");
+    document.getElementById("keepBtn").disabled=false;
+    document.getElementById("returnBtn").disabled=false;
+  }
 }
+
+let lastVoteType=null;
 
 async function vote(type){
   if(voted[current]||loading)return;
   const d=devices[current];
   const slug=d.slug||current.toLowerCase().replace(/\s+/g,'-');
-  const inp=document.getElementById("takeInput");
-  const text=inp.value.trim();
 
   // Disable buttons immediately
   document.getElementById("keepBtn").disabled=true;
@@ -321,11 +392,10 @@ async function vote(type){
     const res=await fetch('/api/vote',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({device:slug,type,take:text||undefined})
+      body:JSON.stringify({device:slug,type})
     });
 
     if(res.status===409){
-      // Already voted from this IP
       voted[current]=type;
       localStorage.setItem('kor_voted',JSON.stringify(voted));
       updateVoteUI();
@@ -338,30 +408,89 @@ async function vote(type){
     d.keep=data.keep;
     d.votes=data.votes;
     voted[current]=type;
+    lastVoteType=type;
     localStorage.setItem('kor_voted',JSON.stringify(voted));
 
-    if(text){
-      d.takes.unshift({type,text,time:'just now'});
-      if(d.takes.length>6)d.takes.pop();
-    }
+    // Update hero stats
+    animateNumber(document.getElementById("pctNum"),d.keep,1200);
+    const offset=CIRC-(d.keep/100)*CIRC;
+    ring.style.strokeDashoffset=CIRC;
+    ring.style.stroke=d.keep>=50?"var(--keep)":"var(--return)";
+    requestAnimationFrame(()=>{requestAnimationFrame(()=>{ring.style.strokeDashoffset=offset})});
+    document.getElementById("splitKeep").style.width=d.keep+"%";
+    document.getElementById("splitReturn").style.width=(100-d.keep)+"%";
+    document.getElementById("keepLabel").textContent=d.keep+"% keep";
+    document.getElementById("returnLabel").textContent=(100-d.keep)+"% return";
+    document.getElementById("statVotes").textContent=fmt(d.votes);
 
-    inp.value="";
-    document.getElementById("charCount").textContent="80";
-    document.getElementById("charCount").classList.remove("warn");
-    selectDevice(current);
+    // Show voted state + take input phase
+    document.getElementById("votePhase1").style.display="none";
+    const votedState=document.getElementById("votedState");
+    votedState.classList.add("visible");
+    const check=document.getElementById("votedCheck");
+    check.className="voted-check "+type;
+    check.innerHTML=type==="keep"?"\u2713":"\u2717";
+    document.getElementById("votedVerdict").textContent=
+      type==="keep"?"You're keeping it":"You're returning it";
+
+    // Reveal take input after a beat
+    setTimeout(()=>{
+      document.getElementById("takePhase").classList.add("visible");
+      document.getElementById("takeInput").focus();
+    },500);
+
   }catch(e){
     console.error('Vote error:',e);
-    // Re-enable buttons on error
     document.getElementById("keepBtn").disabled=false;
     document.getElementById("returnBtn").disabled=false;
+  }
+}
+
+async function submitTake(){
+  const inp=document.getElementById("takeInput");
+  const text=inp.value.trim();
+  if(!text||!lastVoteType||!current)return;
+
+  const d=devices[current];
+  const slug=d.slug||current.toLowerCase().replace(/\s+/g,'-');
+  const btn=document.getElementById("takeSubmitBtn");
+  btn.disabled=true;
+  btn.textContent="Posting...";
+
+  try{
+    await fetch('/api/vote',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({device:slug,type:lastVoteType,take:text})
+    });
+    // Even if 409 (already voted), the take might not have been saved
+    // Add it locally for instant feedback
+    d.takes.unshift({type:lastVoteType,text,time:'just now'});
+    if(d.takes.length>6)d.takes.pop();
+    renderTakes();
+
+    inp.value="";
+    document.getElementById("charCount").textContent="80 characters left";
+    document.getElementById("charCount").classList.remove("warn");
+    btn.textContent="Posted!";
+    setTimeout(()=>{
+      document.getElementById("takePhase").classList.remove("visible");
+    },1500);
+  }catch(e){
+    btn.textContent="Post";
+    btn.disabled=false;
   }
 }
 
 document.getElementById("takeInput").addEventListener("input",function(){
   const rem=80-this.value.length;
   const cc=document.getElementById("charCount");
-  cc.textContent=rem;
+  cc.textContent=rem+" character"+(rem!==1?"s":"")+" left";
   cc.classList.toggle("warn",rem<10);
+});
+
+document.getElementById("takeInput").addEventListener("keydown",function(e){
+  if(e.key==="Enter"&&this.value.trim())submitTake();
 });
 
 function openShare(){
