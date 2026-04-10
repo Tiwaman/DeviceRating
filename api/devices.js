@@ -62,7 +62,18 @@ module.exports = async function handler(req, res) {
 
       let keepPct;
       if (userTotal === 0 && scrTotal === 0) {
-        keepPct = 50; // default
+        // Fall back to latest snapshot data (seed data)
+        const { data: latestSnap } = await supabase
+          .from('daily_snapshots')
+          .select('keep_pct, total_votes')
+          .eq('device_id', device.id)
+          .order('snapshot_date', { ascending: false })
+          .limit(1);
+        if (latestSnap && latestSnap.length > 0) {
+          keepPct = Math.round(latestSnap[0].keep_pct);
+        } else {
+          keepPct = 50;
+        }
       } else if (scrTotal === 0) {
         keepPct = Math.round((userKeep / userTotal) * 100);
       } else if (userTotal === 0) {
@@ -106,10 +117,16 @@ module.exports = async function handler(req, res) {
         time: relativeTime(t.created_at)
       }));
 
+      // Use snapshot baseline for vote count if no real votes yet
+      let displayVotes = userTotal + scrTotal;
+      if (displayVotes === 0 && snapshots && snapshots.length > 0) {
+        displayVotes = snapshots[0].total_votes || 0;
+      }
+
       result[device.name] = {
         slug: device.slug,
         keep: keepPct,
-        votes: userTotal + scrTotal,
+        votes: displayVotes,
         days,
         trend,
         takes: formattedTakes
