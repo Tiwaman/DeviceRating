@@ -1,0 +1,34 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Claude_Preview__preview_start",
+      "Bash(git init:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m ':*)",
+      "Bash(gh repo:*)",
+      "Bash(git remote:*)",
+      "Bash(git branch:*)",
+      "Bash(git push:*)",
+      "Bash(npx vercel:*)",
+      "Bash(npm install:*)",
+      "Bash(npx supabase:*)",
+      "Bash(where supabase:*)",
+      "Bash(npx supabase@latest --version)",
+      "Bash(curl -s https://devicerating.com/api/devices)",
+      "Bash(curl -s \"https://devicerating.com/api/devices\")",
+      "Bash(curl -s -X POST \"https://devicerating.com/api/vote\" -H \"Content-Type: application/json\" -d '{\"device\":\"macbook-air-m3\",\"type\":\"keep\",\"take\":\"Testing the API works perfectly\"}')",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(f'{k}: {v[\\\\\"keep\\\\\"]}% keep, {v[\\\\\"votes\\\\\"]} votes, trend={v[\\\\\"trend\\\\\"]}'\\) for k,v in d.items\\(\\)]\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); [print\\(f\\\\\"{k}: {v['keep']}%% keep, {v['votes']} votes, trend={v['trend']}\\\\\"\\) for k,v in d.items\\(\\)]\")",
+      "Bash(python -c \"import json; d=json.load\\(open\\('C:/Aman/DeviceRating/test_output.json'\\)\\); [print\\(f'{k}: {v[chr\\(107\\)+chr\\(101\\)+chr\\(101\\)+chr\\(112\\)]}'\\) for k,v in d.items\\(\\)]\")",
+      "Bash(curl -s \"https://devicerating.com/robots.txt\")",
+      "Bash(curl -s \"https://devicerating.com/sitemap.xml\")",
+      "Bash(curl -s \"https://devicerating.com/blog\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" -H \"Authorization: Bearer dr-admin-2026-secure\" \"https://devicerating.com/api/blog-admin\")",
+      "Bash(curl -s -H \"Authorization: Bearer dr-admin-2026-secure\" \"https://devicerating.com/api/blog-admin\")",
+      "Bash(printf 'dr-admin-2026-secure')",
+      "Bash(curl -s -X POST https://devicerating.com/api/blog-admin -H 'Authorization: Bearer dr-admin-2026-secure' -H 'Content-Type: application/json' -d '{\"title\":\"iPhone 16 Pro Review: Is It Worth Keeping?\",\"slug\":\"iphone-16-pro-review\",\"meta_description\":\"74% of real owners would keep the iPhone 16 Pro. We break down why — and why 26% sent it back.\",\"keywords\":[\"iphone 16 pro\",\"review\",\"keep or return\",\"apple\"],\"featured_image\":\"https://images.unsplash.com/photo-1695048133142-1a20484d2569?w=1200\",\"content\":\"## The Verdict Is In\\\\n\\\\nAfter tracking **18,420 real owner verdicts**, the iPhone 16 Pro sits at a **74% keep rate**. That puts it solidly in the \\\\\"worth it\\\\\" territory — but what about the 26% who returned it?\\\\n\\\\n### Why Owners Keep It\\\\n\\\\n- **Camera Control** finally makes sense after the first two weeks\\\\n- **Battery life** that genuinely lasts all day\\\\n- **Action Mode video** makes everything look cinematic\\\\n\\\\n### Why Some Return It\\\\n\\\\n- Too heavy for extended one-handed use\\\\n- The upgrade from the 15 Pro feels incremental\\\\n- Price-to-value ratio is hard to justify\\\\n\\\\n> \\\\\"Paid £1200 for a slightly better camera. I am the problem.\\\\\" — Anonymous voter\\\\n\\\\n## Should You Buy It?\\\\n\\\\nIf you are coming from an iPhone 13 or older, this is a no-brainer upgrade. If you already have the 15 Pro, think carefully about what the Camera Control button and the slightly better battery actually mean for your daily use.\\\\n\\\\nThe numbers dont' lie — '**3' out of 4 owners would buy it 'again**.,author:DeviceRating' 'Team,status:published,category_id:1,tags:[iphone,apple,flagship],device_slug:iphone-16-pro}'\\\\'' 2>&1')",
+      "Bash(node -e ':*)",
+      "Bash(curl -s \"https://devicerating.com/blog/test-post\")"
+    ]
+  }
+}
