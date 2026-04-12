@@ -84,7 +84,15 @@ input{font-family:inherit}
 .take-dot.return{background:var(--return)}
 .take-text{font-size:15px;line-height:1.5;flex:1}
 .take-meta{font-size:12px;color:var(--grey);margin-top:4px}
-.take-time{font-size:12px;color:var(--grey);white-space:nowrap;margin-top:3px}
+.take-source{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:2px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0}
+.take-source.src-user{background:rgba(255,255,255,.06);color:var(--grey)}
+.take-source.src-reddit{background:rgba(255,69,0,.12);color:#FF6B3D}
+.take-source.src-youtube{background:rgba(255,0,0,.1);color:#FF4444}
+.take-source.src-amazon{background:rgba(255,153,0,.1);color:#FFB347}
+.take-source.src-bestbuy{background:rgba(0,112,210,.1);color:#4DA3E8}
+.take-source.src-gsmarena{background:rgba(154,0,0,.1);color:#D46A6A}
+.take-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.take-time{font-size:12px;color:var(--grey);white-space:nowrap}
 
 /* VOTE */
 .vote-section{max-width:640px;margin:52px auto 0;padding:0 40px}
@@ -164,6 +172,7 @@ input{font-family:inherit}
   .take{gap:10px;padding:12px 0}
   .take-dot{width:8px;height:8px;margin-top:6px}
   .take-text{font-size:14px;line-height:1.4}
+  .take-source{font-size:9px;padding:2px 5px}
   .take-time{font-size:11px}
   .vote-section{padding:0 16px;margin-top:36px}
   .vote-card{padding:24px 16px;border-radius:16px}
@@ -302,46 +311,46 @@ input{font-family:inherit}
 // Seed data — renders instantly, then API hydrates with live data
 const SEED={
   "iPhone 16 Pro":{slug:"iphone-16-pro",keep:74,votes:18420,days:143,trend:"up",takes:[
-    {type:"keep",text:"Camera control finally makes sense after 2 weeks",time:"2h ago"},
-    {type:"keep",text:"Battery anxiety is genuinely gone",time:"5h ago"},
-    {type:"return",text:"Too heavy. My wrist lodged a formal complaint.",time:"8h ago"},
-    {type:"return",text:"Paid \u00a31200 for a slightly better camera. I'm the problem.",time:"12h ago"},
-    {type:"keep",text:"Action mode video makes everything look cinematic",time:"1d ago"}
+    {type:"keep",text:"Camera control finally makes sense after 2 weeks",source:"user",time:"2h ago"},
+    {type:"keep",text:"Battery anxiety is genuinely gone",source:"reddit",time:"5h ago"},
+    {type:"return",text:"Too heavy. My wrist lodged a formal complaint.",source:"user",time:"8h ago"},
+    {type:"return",text:"Paid \u00a31200 for a slightly better camera. I'm the problem.",source:"youtube",time:"12h ago"},
+    {type:"keep",text:"Action mode video makes everything look cinematic",source:"reddit",time:"1d ago"}
   ]},
   "Samsung S25 Ultra":{slug:"samsung-s25-ultra",keep:68,votes:14310,days:99,trend:"down",takes:[
-    {type:"keep",text:"S Pen replaced my entire notebook. Not joking.",time:"1h ago"},
-    {type:"return",text:"S Pen is a gimmick I used once and forgot existed",time:"4h ago"},
-    {type:"keep",text:"7 years of updates is the only reason I stayed",time:"9h ago"},
-    {type:"return",text:"Software bloat in 2025 is genuinely embarrassing",time:"14h ago"},
-    {type:"keep",text:"Display makes every other screen look broken",time:"1d ago"}
+    {type:"keep",text:"S Pen replaced my entire notebook. Not joking.",source:"user",time:"1h ago"},
+    {type:"return",text:"S Pen is a gimmick I used once and forgot existed",source:"reddit",time:"4h ago"},
+    {type:"keep",text:"7 years of updates is the only reason I stayed",source:"user",time:"9h ago"},
+    {type:"return",text:"Software bloat in 2025 is genuinely embarrassing",source:"youtube",time:"14h ago"},
+    {type:"keep",text:"Display makes every other screen look broken",source:"amazon",time:"1d ago"}
   ]},
   "MacBook Air M3":{slug:"macbook-air-m3",keep:91,votes:22100,days:210,trend:"up",takes:[
-    {type:"keep",text:"15 hour battery. Everything else is noise.",time:"30m ago"},
-    {type:"keep",text:"Fanless and never once throttled. Black magic.",time:"3h ago"},
-    {type:"return",text:"No HDMI in 2024 should be a criminal offence",time:"7h ago"},
-    {type:"keep",text:"Best laptop for the money. It isn't close.",time:"11h ago"},
-    {type:"return",text:"Dongle life wasn't in the brochure",time:"1d ago"}
+    {type:"keep",text:"15 hour battery. Everything else is noise.",source:"reddit",time:"30m ago"},
+    {type:"keep",text:"Fanless and never once throttled. Black magic.",source:"user",time:"3h ago"},
+    {type:"return",text:"No HDMI in 2024 should be a criminal offence",source:"youtube",time:"7h ago"},
+    {type:"keep",text:"Best laptop for the money. It isn't close.",source:"reddit",time:"11h ago"},
+    {type:"return",text:"Dongle life wasn't in the brochure",source:"user",time:"1d ago"}
   ]},
   "Pixel 9 Pro":{slug:"pixel-9-pro",keep:81,votes:9870,days:119,trend:"up",takes:[
-    {type:"keep",text:"Best photos I've ever taken with a phone",time:"45m ago"},
-    {type:"keep",text:"Clean Android + Gemini is actually a real combo",time:"6h ago"},
-    {type:"return",text:"Feels plasticky for a \u00a31000 phone",time:"10h ago"},
-    {type:"keep",text:"Night Sight at dinner = zero bad photos ever",time:"15h ago"},
-    {type:"return",text:"Network coverage still behind Apple and Samsung",time:"2d ago"}
+    {type:"keep",text:"Best photos I've ever taken with a phone",source:"user",time:"45m ago"},
+    {type:"keep",text:"Clean Android + Gemini is actually a real combo",source:"reddit",time:"6h ago"},
+    {type:"return",text:"Feels plasticky for a \u00a31000 phone",source:"amazon",time:"10h ago"},
+    {type:"keep",text:"Night Sight at dinner = zero bad photos ever",source:"user",time:"15h ago"},
+    {type:"return",text:"Network coverage still behind Apple and Samsung",source:"reddit",time:"2d ago"}
   ]},
   "Nothing Phone 3":{slug:"nothing-phone-3",keep:61,votes:6240,days:65,trend:"flat",takes:[
-    {type:"keep",text:"Glyph interface sounds gimmicky until you use it daily",time:"2h ago"},
-    {type:"return",text:"Paid for the aesthetic. Performance didn't get the memo.",time:"5h ago"},
-    {type:"keep",text:"Most conversations I've had about a phone ever",time:"9h ago"},
-    {type:"return",text:"Hype was louder than the actual product",time:"13h ago"},
-    {type:"keep",text:"Looks like nothing else. That alone justifies it.",time:"1d ago"}
+    {type:"keep",text:"Glyph interface sounds gimmicky until you use it daily",source:"reddit",time:"2h ago"},
+    {type:"return",text:"Paid for the aesthetic. Performance didn't get the memo.",source:"user",time:"5h ago"},
+    {type:"keep",text:"Most conversations I've had about a phone ever",source:"user",time:"9h ago"},
+    {type:"return",text:"Hype was louder than the actual product",source:"youtube",time:"13h ago"},
+    {type:"keep",text:"Looks like nothing else. That alone justifies it.",source:"reddit",time:"1d ago"}
   ]},
   "OnePlus 13":{slug:"oneplus-13",keep:77,votes:11580,days:89,trend:"up",takes:[
-    {type:"keep",text:"Hasselblad tuning actually shows in real photos",time:"1h ago"},
-    {type:"keep",text:"Charges from 0 to 100 while I shower. Insane.",time:"4h ago"},
-    {type:"return",text:"OxygenOS feels unfinished in small but annoying ways",time:"8h ago"},
-    {type:"keep",text:"Flagship specs at \u00a3200 less than the competition",time:"12h ago"},
-    {type:"return",text:"Resale value is basically zero and I knew it going in",time:"1d ago"}
+    {type:"keep",text:"Hasselblad tuning actually shows in real photos",source:"user",time:"1h ago"},
+    {type:"keep",text:"Charges from 0 to 100 while I shower. Insane.",source:"reddit",time:"4h ago"},
+    {type:"return",text:"OxygenOS feels unfinished in small but annoying ways",source:"amazon",time:"8h ago"},
+    {type:"keep",text:"Flagship specs at \u00a3200 less than the competition",source:"user",time:"12h ago"},
+    {type:"return",text:"Resale value is basically zero and I knew it going in",source:"youtube",time:"1d ago"}
   ]}
 };
 
@@ -426,15 +435,19 @@ function selectDevice(name){
   updateVoteUI();
 }
 
+const SOURCE_LABELS={user:'User',reddit:'Reddit',youtube:'YouTube',amazon:'Amazon',bestbuy:'Best Buy',gsmarena:'GSMArena'};
+
 function renderTakes(){
   const feed=document.getElementById("takesFeed");
   feed.innerHTML="";
   const d=devices[current];
   if(!d||!d.takes)return;
   d.takes.slice(0,6).forEach(t=>{
+    const src=t.source||'user';
+    const srcLabel=SOURCE_LABELS[src]||src;
     const div=document.createElement("div");
     div.className="take";
-    div.innerHTML=`<div class="take-dot ${t.type}"></div><div style="flex:1"><div class="take-text">${esc(t.text)}</div></div><div class="take-time">${esc(t.time)}</div>`;
+    div.innerHTML=`<div class="take-dot ${t.type}"></div><div style="flex:1"><div class="take-text">${esc(t.text)}</div></div><div class="take-right"><span class="take-source src-${src}">${esc(srcLabel)}</span><span class="take-time">${esc(t.time)}</span></div>`;
     feed.appendChild(div);
   });
 }
@@ -561,7 +574,7 @@ async function submitTake(){
     });
     // Even if 409 (already voted), the take might not have been saved
     // Add it locally for instant feedback
-    d.takes.unshift({type:lastVoteType,text,time:'just now'});
+    d.takes.unshift({type:lastVoteType,text,source:'user',time:'just now'});
     if(d.takes.length>6)d.takes.pop();
     renderTakes();
 

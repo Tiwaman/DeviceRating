@@ -38,7 +38,7 @@ module.exports = async function handler(req, res) {
 
     const { data: takes, error: takesErr } = await supabase
       .from('takes')
-      .select('vote_type, text, created_at')
+      .select('vote_type, text, source, created_at')
       .eq('device_id', dev.id)
       .order('created_at', { ascending: false })
       .limit(limit);
@@ -47,6 +47,7 @@ module.exports = async function handler(req, res) {
 
     const formatted = (takes || []).map(t => ({
       type: t.vote_type,
+      source: t.source || 'user',
       text: t.text,
       time: relativeTime(t.created_at)
     }));

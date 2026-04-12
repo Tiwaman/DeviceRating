@@ -55,6 +55,18 @@ module.exports = async function handler(req, res) {
         skipped++;
       } else {
         inserted++;
+        // Also insert as a hot take with source attribution (short enough reviews only)
+        if (review.sentiment !== 'neutral' && review.text.length <= 80) {
+          await supabase
+            .from('takes')
+            .insert({
+              device_id: device.id,
+              vote_type: review.sentiment,
+              text: review.text,
+              source: review.source,
+              ip_hash: 'scraper-' + review.source_id
+            });
+        }
       }
     }
 

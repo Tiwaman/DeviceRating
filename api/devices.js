@@ -24,7 +24,7 @@ module.exports = async function handler(req, res) {
       supabase.from('votes').select('device_id, vote_type'),
       supabase.from('scraped_reviews').select('device_id, sentiment').in('sentiment', ['keep', 'return']),
       supabase.from('daily_snapshots').select('device_id, keep_pct, total_votes, snapshot_date').order('snapshot_date', { ascending: false }),
-      supabase.from('takes').select('device_id, vote_type, text, created_at').order('created_at', { ascending: false }).limit(50)
+      supabase.from('takes').select('device_id, vote_type, text, source, created_at').order('created_at', { ascending: false }).limit(50)
     ]);
 
     if (devicesRes.error) throw devicesRes.error;
@@ -110,6 +110,7 @@ module.exports = async function handler(req, res) {
         takes: takes.map(t => ({
           type: t.vote_type,
           text: t.text,
+          source: t.source || 'user',
           time: relativeTime(t.created_at)
         }))
       };
