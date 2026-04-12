@@ -4,5 +4,12 @@
       "path": "/api/scrape",
       "schedule": "0 6 * * *"
     }
+  ],
+  "rewrites": [
+    { "source": "/blog", "destination": "/api/blog" },
+    { "source": "/blog/:slug", "destination": "/api/blog?slug=:slug" },
+    { "source": "/admin", "destination": "/admin.html" },
+    { "source": "/sitemap.xml", "destination": "/api/sitemap" },
+    { "source": "/robots.txt", "destination": "/api/robots" }
   ]
 }

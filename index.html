@@ -164,7 +164,10 @@ input{font-family:inherit}
 <body>
 
 <nav class="nav">
-  <div class="nav-logo"><span class="logo-device">DEVICE</span><span class="logo-rating">RATING</span><span class="logo-dot"></span></div>
+  <div style="display:flex;align-items:center;gap:24px">
+    <div class="nav-logo"><span class="logo-device">DEVICE</span><span class="logo-rating">RATING</span><span class="logo-dot"></span></div>
+    <a href="/blog" style="font-size:14px;color:var(--grey);text-decoration:none;transition:color .15s" onmouseover="this.style.color='var(--white)'" onmouseout="this.style.color='var(--grey)'">Blog</a>
+  </div>
   <div class="nav-tagline">the only review that matters</div>
 </nav>
 

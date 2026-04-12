@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Blog Admin | DeviceRating</title>
+<meta name="robots" content="noindex,nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=DM+Serif+Display&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{--bg:#0A0A0A;--white:#FAFAFA;--grey:#888;--dim:#1A1A1A;--border:#222;--keep:#00E5A0;--return:#FF4D2E;--sans:'DM Sans',sans-serif;--serif:'DM Serif Display',serif}
+body{background:var(--bg);color:var(--white);font-family:var(--sans);min-height:100vh;-webkit-font-smoothing:antialiased}
+a{color:var(--keep);text-decoration:none}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input,textarea,select{font-family:inherit;background:var(--bg);color:var(--white);border:1px solid var(--border);border-radius:10px;padding:12px 14px;font-size:14px;outline:none;width:100%;transition:border-color .15s}
+input:focus,textarea:focus,select:focus{border-color:#444}
+::placeholder{color:#444}
+select{cursor:pointer}
+select option{background:var(--dim);color:var(--white)}
+
+.nav{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;border-bottom:1px solid var(--border)}
+.nav-logo{display:flex;align-items:center;font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:700;letter-spacing:-0.5px}
+.logo-device{color:var(--white)}.logo-rating{color:var(--keep)}
+.nav-right{display:flex;align-items:center;gap:16px;font-size:13px;color:var(--grey)}
+
+/* AUTH */
+.auth-screen{display:flex;align-items:center;justify-content:center;height:calc(100vh - 70px);flex-direction:column;gap:16px}
+.auth-screen h2{font-family:var(--serif);font-size:24px}
+.auth-screen input{max-width:320px}
+.auth-btn{padding:12px 28px;border-radius:10px;background:var(--keep);color:var(--bg);font-weight:700;font-size:14px}
+.auth-error{color:var(--return);font-size:13px}
+
+/* LAYOUT */
+.admin-wrap{display:grid;grid-template-columns:300px 1fr;height:calc(100vh - 70px)}
+.sidebar{border-right:1px solid var(--border);overflow-y:auto;padding:16px}
+.main{overflow-y:auto;padding:24px 32px}
+
+/* SIDEBAR */
+.new-btn{width:100%;padding:12px;border-radius:10px;background:var(--keep);color:var(--bg);font-weight:700;font-size:14px;margin-bottom:16px;transition:opacity .15s}
+.new-btn:hover{opacity:.85}
+.post-list{display:flex;flex-direction:column;gap:4px}
+.post-item{padding:12px;border-radius:10px;cursor:pointer;transition:background .15s;display:flex;flex-direction:column;gap:4px}
+.post-item:hover{background:var(--dim)}
+.post-item.active{background:var(--dim);border:1px solid var(--border)}
+.post-item-title{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.post-item-meta{font-size:11px;color:var(--grey);display:flex;gap:8px;align-items:center}
+.status-badge{padding:2px 8px;border-radius:100px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px}
+.status-badge.draft{background:rgba(255,255,255,.08);color:var(--grey)}
+.status-badge.published{background:rgba(0,229,160,.12);color:var(--keep)}
+
+/* EDITOR */
+.editor-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;gap:12px;flex-wrap:wrap}
+.editor-header h2{font-family:var(--serif);font-size:20px}
+.editor-actions{display:flex;gap:10px}
+.btn{padding:10px 20px;border-radius:10px;font-size:13px;font-weight:600;transition:all .15s}
+.btn-draft{background:var(--dim);border:1px solid var(--border)}
+.btn-draft:hover{border-color:#444}
+.btn-publish{background:var(--keep);color:var(--bg)}
+.btn-publish:hover{opacity:.85}
+.btn-delete{background:rgba(255,77,46,.12);color:var(--return);border:1px solid rgba(255,77,46,.2)}
+.btn-delete:hover{background:rgba(255,77,46,.22)}
+
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:24px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group.full{grid-column:1/-1}
+.form-label{font-size:12px;color:var(--grey);text-transform:uppercase;letter-spacing:.5px;font-weight:500}
+.form-hint{font-size:11px;color:#555}
+.char-counter{font-size:11px;color:var(--grey);text-align:right}
+.char-counter.warn{color:var(--return)}
+
+.img-preview{max-width:200px;max-height:120px;border-radius:8px;margin-top:8px;display:none}
+
+/* MARKDOWN EDITOR */
+.md-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:12px;overflow:hidden;min-height:400px}
+.md-col{background:var(--bg);display:flex;flex-direction:column}
+.md-col-header{padding:8px 14px;font-size:11px;color:var(--grey);text-transform:uppercase;letter-spacing:.5px;background:var(--dim);border-bottom:1px solid var(--border);font-weight:600}
+.md-textarea{flex:1;resize:none;border:none;border-radius:0;padding:16px;font-size:14px;line-height:1.7;font-family:'DM Sans',monospace;min-height:400px}
+.md-textarea:focus{border-color:transparent}
+.md-preview{flex:1;padding:16px;overflow-y:auto;font-size:15px;line-height:1.7;color:#ccc}
+.md-preview h2{font-family:var(--serif);font-size:24px;color:var(--white);margin:24px 0 12px}
+.md-preview h3{font-family:var(--serif);font-size:20px;color:var(--white);margin:20px 0 8px}
+.md-preview p{margin-bottom:14px}
+.md-preview ul,.md-preview ol{padding-left:20px;margin-bottom:14px}
+.md-preview li{margin-bottom:6px}
+.md-preview blockquote{border-left:3px solid var(--keep);padding:8px 16px;margin:16px 0;background:var(--dim);border-radius:0 8px 8px 0;color:var(--grey)}
+.md-preview code{background:var(--dim);padding:2px 6px;border-radius:4px;font-size:13px;color:var(--keep)}
+.md-preview pre{background:var(--dim);padding:14px;border-radius:8px;overflow-x:auto;margin:16px 0}
+.md-preview pre code{background:none;padding:0;color:#ccc}
+.md-preview img{max-width:100%;border-radius:8px;margin:12px 0}
+.md-preview a{color:var(--keep)}
+.md-preview strong{color:var(--white)}
+
+.empty-state{display:flex;align-items:center;justify-content:center;height:100%;color:var(--grey);font-size:15px;text-align:center;padding:40px}
+
+.toast{position:fixed;bottom:24px;right:24px;padding:14px 24px;border-radius:12px;background:var(--keep);color:var(--bg);font-weight:600;font-size:14px;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;z-index:100}
+.toast.show{opacity:1;transform:translateY(0)}
+.toast.error{background:var(--return);color:var(--white)}
+
+@media(max-width:768px){
+  .admin-wrap{grid-template-columns:1fr}
+  .sidebar{max-height:200px;border-right:none;border-bottom:1px solid var(--border)}
+  .form-grid{grid-template-columns:1fr}
+  .md-wrap{grid-template-columns:1fr;min-height:300px}
+  .md-preview{max-height:200px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-logo"><span class="logo-device">DEVICE</span><span class="logo-rating">RATING</span> <span style="font-size:13px;color:var(--grey);margin-left:10px;font-family:var(--sans);font-weight:400">Blog Admin</span></div>
+  <div class="nav-right" id="navRight"></div>
+</nav>
+
+<div id="authScreen" class="auth-screen">
+  <h2>Blog Admin</h2>
+  <input type="password" id="keyInput" placeholder="Enter admin key" onkeydown="if(event.key==='Enter')tryAuth()">
+  <button class="auth-btn" onclick="tryAuth()">Sign In</button>
+  <div class="auth-error" id="authError"></div>
+</div>
+
+<div id="adminPanel" class="admin-wrap" style="display:none">
+  <aside class="sidebar">
+    <button class="new-btn" onclick="newPost()">+ New Post</button>
+    <div class="post-list" id="postList"></div>
+  </aside>
+  <main class="main" id="editorArea">
+    <div class="empty-state">Select a post or create a new one</div>
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let KEY='';
+let posts=[];
+let categories=[];
+let devices=[];
+let currentPostId=null;
+
+function toast(msg,isError){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.className='toast show'+(isError?' error':'');
+  setTimeout(()=>t.className='toast',2500);
+}
+
+async function api(method,params,body){
+  const url='/api/blog-admin'+(params?'?'+new URLSearchParams(params):'');
+  const opts={method,headers:{'Authorization':'Bearer '+KEY,'Content-Type':'application/json'}};
+  if(body)opts.body=JSON.stringify(body);
+  const res=await fetch(url,opts);
+  if(!res.ok){
+    const err=await res.json().catch(()=>({error:'Request failed'}));
+    throw new Error(err.error||'Request failed');
+  }
+  return res.json();
+}
+
+async function tryAuth(){
+  KEY=document.getElementById('keyInput').value.trim();
+  if(!KEY)return;
+  try{
+    await api('GET');
+    sessionStorage.setItem('blog_admin_key',KEY);
+    showAdmin();
+  }catch(e){
+    document.getElementById('authError').textContent='Invalid key';
+    KEY='';
+  }
+}
+
+async function showAdmin(){
+  document.getElementById('authScreen').style.display='none';
+  document.getElementById('adminPanel').style.display='grid';
+  document.getElementById('navRight').innerHTML='<a href="/blog" target="_blank">View Blog</a> <button onclick="logout()" style="color:var(--return)">Logout</button>';
+  await loadPosts();
+}
+
+function logout(){
+  sessionStorage.removeItem('blog_admin_key');
+  KEY='';
+  location.reload();
+}
+
+async function loadPosts(){
+  const data=await api('GET');
+  posts=data.posts||[];
+  categories=data.categories||[];
+  devices=data.devices||[];
+  renderPostList();
+}
+
+function renderPostList(){
+  const list=document.getElementById('postList');
+  if(!posts.length){
+    list.innerHTML='<div style="color:var(--grey);font-size:13px;padding:12px">No posts yet</div>';
+    return;
+  }
+  list.innerHTML=posts.map(p=>`
+    <div class="post-item${p.id===currentPostId?' active':''}" onclick="editPost(${p.id})">
+      <div class="post-item-title">${esc(p.title)}</div>
+      <div class="post-item-meta">
+        <span class="status-badge ${p.status}">${p.status}</span>
+        <span>${p.published_at?new Date(p.published_at).toLocaleDateString():''}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+function esc(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+
+function slugify(s){return s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/(^-|-$)/g,'').slice(0,80)}
+
+function newPost(){
+  currentPostId=null;
+  renderEditor({title:'',slug:'',meta_description:'',keywords:[],featured_image:'',content:'',author:'DeviceRating Team',status:'draft',category_id:null,tags:[],device_slug:null});
+}
+
+async function editPost(id){
+  currentPostId=id;
+  renderPostList();
+  try{
+    const post=await api('GET',{id});
+    renderEditor(post);
+  }catch(e){toast(e.message,true)}
+}
+
+function renderEditor(post){
+  const area=document.getElementById('editorArea');
+  const catOpts=categories.map(c=>`<option value="${c.id}"${post.category_id===c.id?' selected':''}>${esc(c.name)}</option>`).join('');
+  const devOpts=devices.map(d=>`<option value="${d.slug}"${post.device_slug===d.slug?' selected':''}>${esc(d.name)}</option>`).join('');
+
+  area.innerHTML=`
+  <div class="editor-header">
+    <h2>${currentPostId?'Edit Post':'New Post'}</h2>
+    <div class="editor-actions">
+      ${currentPostId?'<button class="btn btn-delete" onclick="deletePost()">Delete</button>':''}
+      <button class="btn btn-draft" onclick="savePost('draft')">Save Draft</button>
+      <button class="btn btn-publish" onclick="savePost('published')">Publish</button>
+    </div>
+  </div>
+
+  <div class="form-grid">
+    <div class="form-group">
+      <label class="form-label">Title</label>
+      <input id="fTitle" value="${esc(post.title)}" placeholder="Post title" oninput="autoSlug()">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Slug</label>
+      <input id="fSlug" value="${esc(post.slug)}" placeholder="url-friendly-slug">
+    </div>
+    <div class="form-group full">
+      <label class="form-label">Meta Description <span class="char-counter" id="metaCounter">${(post.meta_description||'').length}/155</span></label>
+      <input id="fMeta" value="${esc(post.meta_description)}" placeholder="SEO description (aim for 120-155 characters)" maxlength="200" oninput="updateMetaCount()">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Keywords (comma-separated)</label>
+      <input id="fKeywords" value="${(post.keywords||[]).join(', ')}" placeholder="iphone, review, keep or return">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Tags (comma-separated)</label>
+      <input id="fTags" value="${(post.tags||[]).join(', ')}" placeholder="review, comparison">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <select id="fCategory"><option value="">None</option>${catOpts}</select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Link to Device</label>
+      <select id="fDevice"><option value="">None</option>${devOpts}</select>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Featured Image URL</label>
+      <input id="fImage" value="${esc(post.featured_image)}" placeholder="https://..." oninput="updateImgPreview()">
+      <img class="img-preview" id="imgPreview" src="${esc(post.featured_image)}" style="${post.featured_image?'display:block':''}">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Author</label>
+      <input id="fAuthor" value="${esc(post.author||'DeviceRating Team')}">
+    </div>
+  </div>
+
+  <label class="form-label" style="margin-bottom:8px;display:block">Content (Markdown)</label>
+  <div class="md-wrap">
+    <div class="md-col">
+      <div class="md-col-header">Write</div>
+      <textarea class="md-textarea" id="fContent" placeholder="Write your post in markdown...">${esc(post.content)}</textarea>
+    </div>
+    <div class="md-col">
+      <div class="md-col-header">Preview</div>
+      <div class="md-preview" id="mdPreview"></div>
+    </div>
+  </div>`;
+
+  // Live preview
+  const ta=document.getElementById('fContent');
+  const preview=document.getElementById('mdPreview');
+  function updatePreview(){preview.innerHTML=marked.parse(ta.value||'')}
+  ta.addEventListener('input',updatePreview);
+  updatePreview();
+}
+
+let slugManual=false;
+function autoSlug(){
+  const titleEl=document.getElementById('fTitle');
+  const slugEl=document.getElementById('fSlug');
+  if(!currentPostId&&!slugManual){
+    slugEl.value=slugify(titleEl.value);
+  }
+}
+document.addEventListener('input',function(e){
+  if(e.target.id==='fSlug')slugManual=true;
+});
+
+function updateMetaCount(){
+  const len=document.getElementById('fMeta').value.length;
+  const counter=document.getElementById('metaCounter');
+  counter.textContent=len+'/155';
+  counter.className='char-counter'+(len>155?' warn':'');
+}
+
+function updateImgPreview(){
+  const url=document.getElementById('fImage').value;
+  const img=document.getElementById('imgPreview');
+  if(url){img.src=url;img.style.display='block'}
+  else{img.style.display='none'}
+}
+
+function parseCSV(s){return (s||'').split(',').map(x=>x.trim()).filter(Boolean)}
+
+async function savePost(status){
+  const body={
+    title:document.getElementById('fTitle').value.trim(),
+    slug:document.getElementById('fSlug').value.trim(),
+    meta_description:document.getElementById('fMeta').value.trim(),
+    keywords:parseCSV(document.getElementById('fKeywords').value),
+    tags:parseCSV(document.getElementById('fTags').value),
+    featured_image:document.getElementById('fImage').value.trim(),
+    content:document.getElementById('fContent').value,
+    author:document.getElementById('fAuthor').value.trim()||'DeviceRating Team',
+    category_id:document.getElementById('fCategory').value||null,
+    device_slug:document.getElementById('fDevice').value||null,
+    status
+  };
+
+  if(!body.title||!body.slug||!body.content){
+    toast('Title, slug, and content are required',true);return;
+  }
+
+  try{
+    if(currentPostId){
+      body.id=currentPostId;
+      await api('PUT',null,body);
+      toast(status==='published'?'Published!':'Draft saved');
+    }else{
+      const created=await api('POST',null,body);
+      currentPostId=created.id;
+      toast(status==='published'?'Published!':'Draft saved');
+    }
+    slugManual=false;
+    await loadPosts();
+    renderPostList();
+  }catch(e){toast(e.message,true)}
+}
+
+async function deletePost(){
+  if(!currentPostId)return;
+  if(!confirm('Delete this post permanently?'))return;
+  try{
+    await api('DELETE',{id:currentPostId});
+    currentPostId=null;
+    document.getElementById('editorArea').innerHTML='<div class="empty-state">Post deleted</div>';
+    toast('Deleted');
+    await loadPosts();
+  }catch(e){toast(e.message,true)}
+}
+
+// Boot
+(function(){
+  const saved=sessionStorage.getItem('blog_admin_key');
+  if(saved){KEY=saved;showAdmin()}
+})();
+</script>
+</body>
+</html>
